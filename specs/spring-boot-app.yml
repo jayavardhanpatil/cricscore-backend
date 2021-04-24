@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: cricscore-springboot
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: cricscore-springboot
+  replicas: 1
+  template:
+    metadata:
+      name: cricscore-springboot
+      labels:
+        app: cricscore-springboot
+    spec:
+      containers:
+      - name: cricscore-springboot
+        env:
+          - name: POSTGRES_USER
+            valueFrom:
+              configMapKeyRef:
+                name: postgres-config
+                key: postgres_user
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              configMapKeyRef:
+                name: postgres-config
+                key: postgres_password
+          - name: POSTGRES_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: hostname-config
+                key: postgres_host
+        image: jayavardhanpatil/cricscore-springboot:v4
