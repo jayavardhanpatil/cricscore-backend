@@ -1,4 +1,4 @@
-package com.cpp.mscs.cricscore;
+package com.cpp.mscs.cricscore.services;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -15,7 +15,6 @@ import java.time.Duration;
  * Time:  13:36
  */
 
-@Component
 public class JedisPoolHelper {
 
     @Value("${spring.redis.host}")

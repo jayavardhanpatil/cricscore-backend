@@ -1,7 +1,10 @@
 package com.cpp.mscs.cricscore.models;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
@@ -16,6 +19,9 @@ import javax.persistence.*;
 @Entity
 @Table(name = "city")
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class City {
 
     @Id

@@ -5,6 +5,8 @@ import com.cpp.mscs.cricscore.services.CurrentPlayingPlayersService;
 import com.cpp.mscs.cricscore.services.InningsService;
 import com.cpp.mscs.cricscore.services.MatchService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by IntelliJ IDEA.
@@ -23,6 +26,7 @@ import java.util.List;
 @Controller
 public class MatchController {
 
+    Logger LOGGER = LoggerFactory.getLogger(MatchController.class);
 
     public static String[] INNINGS_TYPE = {"FIRST", "SECOND"};
 
@@ -37,13 +41,25 @@ public class MatchController {
 
     @PostMapping("match/add")
     public ResponseEntity<?> addMatch(@RequestBody Match match){
-        matchService.addMatch(match);
-        return ResponseEntity.ok().body(match);
+
+        LOGGER.info("Request Add Match {}", match);
+
+        try{
+            matchService.addMatch(match);
+            return ResponseEntity.ok().body(match);
+        }catch (Exception e){
+            LOGGER.error("Failed to add Match {}", match);
+        }
+        return ResponseEntity.status(500).body(match);
+
     }
 
     @GetMapping("match/{matchId}")
     public ResponseEntity<?> getMatch(@PathVariable Long matchId){
-        return ResponseEntity.ok().body(matchService.getMatch(matchId));
+        LOGGER.info("Request Get Match {}", matchId);
+        Optional<Match> match = matchService.getMatch(matchId);
+        LOGGER.info("Response : Match {}", match);
+        return ResponseEntity.ok().body(match);
     }
 
     @PutMapping("match/{matchId}")

@@ -1,6 +1,5 @@
 package com.cpp.mscs.cricscore.services;
 
-import com.cpp.mscs.cricscore.JedisPoolHelper;
 import com.cpp.mscs.cricscore.models.*;
 import com.cpp.mscs.cricscore.repositories.MatchPlayedRepo;
 import com.cpp.mscs.cricscore.repositories.MatchRepo;
@@ -8,7 +7,10 @@ import com.cpp.mscs.cricscore.repositories.TeamName;
 import com.cpp.mscs.cricscore.repositories.TeamRepo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 
@@ -27,6 +29,8 @@ import static com.cpp.mscs.cricscore.controller.MatchController.INNINGS_TYPE;
 
 @Service
 public class MatchService {
+
+    Logger LOGGER = LoggerFactory.getLogger(MatchService.class);
 
     @Autowired
     MatchRepo matchRepo;
@@ -47,6 +51,9 @@ public class MatchService {
 
     @Transactional
     public void addMatch(Match match) {
+
+        LOGGER.info("Adding Match details to DB {}", match.getMatchId());
+
         long matchId = matchRepo.save(match).getMatchId();
         MatchSummary matchSummary = new MatchSummary();
         matchSummary.setFirstInningsOver(false);
@@ -58,33 +65,61 @@ public class MatchService {
             addMatchSummaryData(matchSummary, matchId, (long) match.getMatchVenuecityId());
         } catch (IOException e) {
             e.printStackTrace();
+            LOGGER.error("Failed to add Match Summary Data");
         }
         addSelectedPlayers(match, matchId);
     }
 
     @Transactional
     public void addSelectedPlayers(Match match, long matchId) {
+
+        LOGGER.info("Adding Selected Players to DB {}", match.getMatchId());
+
         List<MatchPlayer> collections = new ArrayList<>();
         for(String playeruuid : match.getTeamAplayers()){
             collections.add(new MatchPlayer(matchId, playeruuid, match.getTeamAId()));
         }
-        matchPlayedRepo.saveAll(collections);
+        try{
+            matchPlayedRepo.saveAll(collections);
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error("Failed to Add Match Team A players to repository {}", collections);
+        }
+
 
         for(String playeruuid : match.getTeamBplayers()){
             collections.add(new MatchPlayer(matchId, playeruuid, match.getTeamBId()));
         }
-        matchPlayedRepo.saveAll(collections);
+        try {
+            matchPlayedRepo.saveAll(collections);
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error("Failed to Add Match Team B players to repository {}", collections);
+        }
+
     }
 
     @Transactional
     public void addPlayer(long mathcId, String uuId, MatchPlayer player){
+        LOGGER.info("Adding Players to DB {} ", player);
         player.setPrimaryKey(new ReferencePrimaryKey(mathcId, uuId));
-        matchPlayedRepo.save(player);
+        try {
+            matchPlayedRepo.save(player);
+        }catch (Exception e){
+            LOGGER.error("Failed to Players to DB {}", player);
+        }
+
     }
 
     @Transactional
     public void updateMatch(long mathcId, Match match) throws IOException {
-        matchRepo.updateResult(match.getResult(), match.getWinningTeamId(), match.getTotalScore(), mathcId);
+        LOGGER.info("Updating Match details");
+        try{
+            matchRepo.updateResult(match.getResult(), match.getWinningTeamId(), match.getTotalScore(), mathcId);
+        }catch (Exception e){
+            LOGGER.error("Failed to update match details");
+        }
+
         String matchSummaryData = getLiveMatchesIdsinTheCity(match.getMatchVenuecityId()).get(String.valueOf(mathcId));
         MatchSummary matchSummary = getMatchSummary(matchSummaryData);
 
@@ -97,11 +132,23 @@ public class MatchService {
         addMatchSummaryData(matchSummary, mathcId, (long) match.getMatchVenuecityId());
     }
 
+    @Cacheable("matchInning")
     public Optional<Match> getMatch(long matchId) {
-        return matchRepo.findById(matchId);
+        LOGGER.info("Get match by Match Id {}", matchId);
+        try {
+            return matchRepo.findById(matchId);
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error("Failed to fetch match for the Match ID : {}" , matchId);
+            return Optional.ofNullable(null);
+        }
+
     }
 
+    @Cacheable("matchesInCity")
     public List<MatchSummary> getMatchesinTheCity(long cityId){
+        LOGGER.info("Get matches by city Id {}", cityId);
+
         Map<String, String> matchIds = getLiveMatchesIdsinTheCity(cityId);
         List<MatchSummary> matchSummaries = new ArrayList<>();
 
@@ -125,6 +172,7 @@ public class MatchService {
         return matchSummaries;
     }
 
+    @Cacheable("liveScore")
     public Map<String, String> getLiveMatchesIdsinTheCity(long cityId){
         Jedis jedis = JedisPoolHelper.getResource();
         return jedis.hgetAll("city-"+cityId);

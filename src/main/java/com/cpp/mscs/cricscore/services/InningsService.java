@@ -2,11 +2,14 @@ package com.cpp.mscs.cricscore.services;
 
 import com.cpp.mscs.cricscore.models.*;
 import com.cpp.mscs.cricscore.repositories.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.text.MessageFormat;
 
 import static com.cpp.mscs.cricscore.controller.MatchController.INNINGS_TYPE;
 
@@ -22,6 +25,8 @@ public class InningsService {
 
     final
     InningsRepo inningsRepo;
+
+    Logger LOGGER = LoggerFactory.getLogger(InningsService.class);
 
     @Autowired
     TeamRepo teamRepo;
@@ -40,8 +45,15 @@ public class InningsService {
     }
 
     public void addInnings(Inning innings) throws IOException {
-        inningsRepo.save(innings);
 
+        LOGGER.info("Adding Innings details");
+        try{
+            inningsRepo.save(innings);
+        }catch (Exception e){
+            LOGGER.error("Failed to add Innings details {} ", innings);
+        }
+
+        LOGGER.info("Getting CityId of the Innings");
         long cityId = matchRepo.getCity(innings.getPrimaryKey().getMatchId());
 
         String matchSummaryData = matchService.getLiveMatchesIdsinTheCity(
@@ -52,6 +64,7 @@ public class InningsService {
             matchSummary.setFirstInningsOver(true);
         }
 
+        LOGGER.info("Add Match Summary Data");
         matchService.addMatchSummaryData(matchSummary, innings.getPrimaryKey().getMatchId()
                 , (long) cityId);
 
@@ -59,10 +72,17 @@ public class InningsService {
 
     @Transactional
     public void updatePlayersBattingInning(MatchPlayer matchPlayer, long matchId, String playerUuId) {
+        LOGGER.info("Updating batting player {},  Mathc Id - {}", playerUuId, matchId);
         matchPlayer.setPrimaryKey(new ReferencePrimaryKey(matchId, playerUuId));
-        matchPlayedRepo.updateBattingScore(matchPlayer.getBallsFaced(),
-                matchPlayer.getNumberOfFours(), matchPlayer.getNumberOfsixes(), matchPlayer.getOut(),matchPlayer.getPlayedPosition()
-        ,matchPlayer.getRun(), matchId, playerUuId);
+        try{
+            matchPlayedRepo.updateBattingScore(matchPlayer.getBallsFaced(),
+                    matchPlayer.getNumberOfFours(), matchPlayer.getNumberOfsixes(), matchPlayer.getOut(),matchPlayer.getPlayedPosition()
+                    ,matchPlayer.getRun(), matchId, playerUuId);
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error(MessageFormat.format("Failed to Update Batting Player : {} ", e.getMessage()), e.fillInStackTrace());
+        }
+
     }
 
     @Transactional

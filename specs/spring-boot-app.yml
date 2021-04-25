@@ -33,4 +33,4 @@ spec:
               configMapKeyRef:
                 name: hostname-config
                 key: postgres_host
-        image: jayavardhanpatil/cricscore-springboot:v4
+        image: jayavardhanpatil/cricscore-springboot:v8

@@ -3,6 +3,7 @@ package com.cpp.mscs.cricscore.repositories;
 import com.cpp.mscs.cricscore.models.City;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import javax.persistence.Cacheable;
 import java.util.List;
 
 /**

@@ -2,6 +2,8 @@ package com.cpp.mscs.cricscore.controller;
 
 import com.cpp.mscs.cricscore.models.Team;
 import com.cpp.mscs.cricscore.services.TeamService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,9 +21,11 @@ public class TeamController {
     @Autowired
     TeamService teamService;
 
+    Logger LOGGER = LoggerFactory.getLogger(TeamController.class);
+
     @PostMapping("teams/add")
     public ResponseEntity<?> addTeam(@RequestBody Team team){
-        //System.out.println(team.getTeamId());
+        LOGGER.info("Adding Team Details {}", team);
         teamService.addTeam(team);
         return ResponseEntity.ok().body(team);
     }
@@ -43,7 +47,7 @@ public class TeamController {
     }
 
     @GetMapping("teams/all")
-    public ResponseEntity<?> getTeam(){
+    public ResponseEntity<?> getTeam() throws InterruptedException {
         return ResponseEntity.ok().body(teamService.getAllTeams());
     }
 }
