@@ -100,8 +100,8 @@
 				<configuration>
 					<repository>jayavardhanpatil/cricscore-springboot</repository>
 					<tag>${project.version}</tag>
-					<username>${project.groupId}</username>
-					<password>${env.DOCKER_HUB_TOKEN}</password>
+					<username>jayavardhanpatil</username>
+					<password>CalPolyCPP</password>
 					<skipDockerInfo>true</skipDockerInfo>
 				</configuration>
 			</plugin>
