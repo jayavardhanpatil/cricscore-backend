@@ -99,31 +99,31 @@
 				</executions>
 				<configuration>
 					<repository>jayavardhanpatil/cricscore-springboot</repository>
-					<tag>${project.version}</tag>
+					<tag>v10</tag>
 					<username>jayavardhanpatil</username>
 					<password>CalPolyCPP</password>
 					<skipDockerInfo>true</skipDockerInfo>
 				</configuration>
 			</plugin>
 
-<!--			<plugin>-->
-<!--				<groupId>org.apache.maven.plugins</groupId>-->
-<!--				<artifactId>maven-deploy-plugin</artifactId>-->
-<!--				<version>2.8.2</version>-->
-<!--				<configuration>-->
-<!--					<skip>true</skip>-->
-<!--				</configuration>-->
-<!--			</plugin>-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>2.8.2</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
 
 
-<!--			<plugin>-->
-<!--				<groupId>org.apache.maven.plugins</groupId>-->
-<!--				<artifactId>maven-release-plugin</artifactId>-->
-<!--				<version>2.5.3</version>-->
-<!--				<configuration>-->
-<!--					<tagNameFormat>v8</tagNameFormat>-->
-<!--				</configuration>-->
-<!--			</plugin>-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5.3</version>
+				<configuration>
+					<tagNameFormat>v10</tagNameFormat>
+				</configuration>
+			</plugin>
 		</plugins>
 
 	</build>
