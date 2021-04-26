@@ -16,6 +16,7 @@
 	<properties>
 		<java.version>1.8</java.version>
 	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -82,36 +83,28 @@
 				</configuration>
 
 			</plugin>
-<!--			<plugin>-->
-<!--					<groupId>com.spotify</groupId>-->
-<!--					<artifactId>dockerfile-maven-plugin</artifactId>-->
-<!--					<version>1.4.12</version>-->
-<!--					<executions>-->
-<!--						<execution>-->
-<!--							<id>default</id>-->
-<!--							<goals>-->
-<!--								<goal>build</goal>-->
-<!--								<goal>push</goal>-->
-<!--							</goals>-->
-<!--						</execution>-->
-<!--						<execution>-->
-<!--							<id>tag-latest</id>-->
-<!--							<goals>-->
-<!--								<goal>build</goal>-->
-<!--								<goal>push</goal>-->
-<!--							</goals>-->
-<!--							<configuration>-->
-<!--								<tag>latest</tag>-->
-<!--							</configuration>-->
-<!--						</execution>-->
-<!--					</executions>-->
-<!--					<configuration>-->
-<!--						<username>${project.groupId}</username>-->
-<!--						<password>${env.DOCKER_HUB_TOKEN}</password>-->
-<!--						<repository>registry.hub.docker.com/${project.groupId}/${project.artifactId}</repository>-->
-<!--						<tag>${project.version}</tag>-->
-<!--					</configuration>-->
-<!--			</plugin>-->
+
+			<plugin>
+				<groupId>com.spotify</groupId>
+				<artifactId>dockerfile-maven-plugin</artifactId>
+				<version>1.4.10</version>
+				<executions>
+					<execution>
+						<id>default</id>
+						<goals>
+							<goal>build</goal>
+							<goal>push</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<repository>jayavardhanpatil/cricscore-springboot</repository>
+					<tag>${project.version}</tag>
+					<username>${project.groupId}</username>
+					<password>${env.DOCKER_HUB_TOKEN}</password>
+					<skipDockerInfo>true</skipDockerInfo>
+				</configuration>
+			</plugin>
 
 <!--			<plugin>-->
 <!--				<groupId>org.apache.maven.plugins</groupId>-->
@@ -128,36 +121,49 @@
 <!--				<artifactId>maven-release-plugin</artifactId>-->
 <!--				<version>2.5.3</version>-->
 <!--				<configuration>-->
-<!--					<tagNameFormat>v@{project.version}</tagNameFormat>-->
+<!--					<tagNameFormat>v8</tagNameFormat>-->
 <!--				</configuration>-->
-<!--			</plugin>-->
-<!--			<plugin>-->
-<!--				<groupId>org.apache.maven.plugins</groupId>-->
-<!--				<artifactId>maven-assembly-plugin</artifactId>-->
-<!--				<version>2.3</version>-->
-<!--				<configuration>-->
-<!--					<descriptorRefs>-->
-<!--						<descriptorRef>jar-with-dependencies</descriptorRef>-->
-<!--					</descriptorRefs>-->
-<!--					<archive>-->
-<!--						<manifest>-->
-<!--							<mainClass>my.main.Class</mainClass>-->
-<!--							<addClasspath>true</addClasspath>-->
-<!--						</manifest>-->
-<!--					</archive>-->
-<!--				</configuration>-->
-<!--				<executions>-->
-<!--					<execution>-->
-<!--						<id>make-assembly</id>-->
-<!--						<phase>package</phase>-->
-<!--						<goals>-->
-<!--							<goal>single</goal>-->
-<!--						</goals>-->
-<!--					</execution>-->
-<!--				</executions>-->
 <!--			</plugin>-->
 		</plugins>
 
 	</build>
+
+	<repositories>
+		<repository>
+			<id>spring-snapshots</id>
+			<name>Spring Snapshots</name>
+			<url>https://repo.spring.io/snapshot</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>https://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>spring-snapshots</id>
+			<name>Spring Snapshots</name>
+			<url>https://repo.spring.io/snapshot</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</pluginRepository>
+		<pluginRepository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>https://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
 
 </project>

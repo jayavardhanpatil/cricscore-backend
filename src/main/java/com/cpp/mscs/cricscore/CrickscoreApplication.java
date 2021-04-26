@@ -18,7 +18,7 @@ public class CrickscoreApplication {
 		SpringApplication.run(CrickscoreApplication.class, args);
 	}
 
-	@Scheduled(fixedRate = 600000)
+	@Scheduled(fixedRate = 600000000)
 	public void evictAllcachesAtIntervals() {
 		cachingService.evictAllCaches();
 	}
