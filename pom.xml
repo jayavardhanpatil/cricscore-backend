@@ -108,7 +108,7 @@
 				<configuration>
 					<username>jayavardhanpatil</username>
 					<!--suppress UnresolvedMavenProperty -->
-					<password>${env.DOCKER_HUB_TOKEN}</password>
+					<password>c295fa40-4c7d-42a3-8f1f-eac4aaba53e4</password>
 					<repository>registry.hub.docker.com/jayavardhanpatil/cricscore-springboot</repository>
 					<tag>${project.version}</tag>
 				</configuration>
