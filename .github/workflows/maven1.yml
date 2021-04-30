@@ -39,6 +39,7 @@ jobs:
         
   push_to_registry:
     name: Push Docker image to Docker Hub
+    environment: docker-maven-ghactions-release
     runs-on: ubuntu-latest
     needs: test
     steps:
@@ -47,9 +48,20 @@ jobs:
       - name: Push to Docker Hub
         uses: docker/build-push-action@v1
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: jayavardhanpatil/cricscore-springboot
-          tag_with_ref: true
-    
-  
+          java-version: 1.8
+      - name: Configure git
+        run: |
+          git config --global committer.email "noreply@github.com"
+          git config --global committer.name "GitHub"
+          git config --global author.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          git config --global author.name "${GITHUB_ACTOR}"
+      - name: Checkout master branch
+        run: git checkout master
+      - name: Prepare release
+        env:
+          GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
+        run: mvn --batch-mode release:prepare -Dusername=$GITHUB_ACTOR -Dpassword=$GITHUB_TOKEN
+      - name: Perform release
+        env:
+          DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
+        run: mvn --batch-mode release:perform
